@@ -5,13 +5,6 @@ import { useParams } from "next/navigation";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
-type TopicDetail = {
-  id: string;
-  name: string;
-  formulas: { id: string; title: string; expression: string }[];
-  savedProblems: { id: string; question: string }[];
-};
-
 const quiz = [
   { q: "What is the derivative of x²?", a: "2x" },
   { q: "Simplify sin²θ + cos²θ", a: "1" }
@@ -19,39 +12,30 @@ const quiz = [
 
 export default function TopicDetailPage() {
   const { id } = useParams<{ id: string }>();
-  const [topic, setTopic] = useState<TopicDetail | null>(null);
+  const [topic, setTopic] = useState<any>(null);
   const [showQuiz, setShowQuiz] = useState(false);
 
-  useEffect(() => {
-    fetch(`/api/topics/${id}`).then((response) => response.json()).then(setTopic);
-  }, [id]);
+  useEffect(() => { fetch(`/api/topics/${id}`).then((r) => r.json()).then(setTopic); }, [id]);
 
   if (!topic) return <p>Loading...</p>;
 
   return (
-    <div className="space-y-4 fade-in-up">
-      <Card className="soft-hover">
+    <div className="space-y-4">
+      <Card>
         <h2 className="text-2xl font-bold">{topic.name}</h2>
-        <p className="text-sm text-muted">Key formulas, examples, and a mini practice set for confidence.</p>
+        <p className="text-sm text-muted">Key formulas and examples for this topic.</p>
       </Card>
-      <Card className="soft-hover">
+      <Card>
         <h3 className="mb-2 font-semibold">Key Formulas</h3>
-        <ul className="space-y-2 text-sm text-muted">
-          {topic.formulas.map((formula) => <li key={formula.id}>• {formula.title}: {formula.expression}</li>)}
-        </ul>
+        <ul className="space-y-2 text-sm text-muted">{topic.formulas.map((f: any) => <li key={f.id}>• {f.title}: {f.expression}</li>)}</ul>
       </Card>
-      <Card className="soft-hover">
+      <Card>
         <h3 className="mb-2 font-semibold">Example Problems</h3>
-        <ul className="space-y-2 text-sm text-muted">
-          {topic.savedProblems.length ? topic.savedProblems.map((problem) => <li key={problem.id}>• {problem.question}</li>) : <li>No examples saved yet.</li>}
-        </ul>
+        <ul className="space-y-2 text-sm text-muted">{topic.savedProblems.map((p: any) => <li key={p.id}>• {p.question}</li>)}</ul>
       </Card>
-      <Card className="soft-hover">
-        <div className="flex items-center justify-between">
-          <h3 className="font-semibold">Practice Quiz</h3>
-          <Button onClick={() => setShowQuiz(!showQuiz)}>Toggle Quiz</Button>
-        </div>
-        {showQuiz && <ul className="mt-3 space-y-2 text-sm text-muted">{quiz.map((item, index) => <li key={index}>{item.q} <span className="text-xs">(Ans: {item.a})</span></li>)}</ul>}
+      <Card>
+        <div className="flex items-center justify-between"><h3 className="font-semibold">Practice Quiz</h3><Button onClick={() => setShowQuiz(!showQuiz)}>Toggle Quiz</Button></div>
+        {showQuiz && <ul className="mt-3 space-y-2 text-sm text-muted">{quiz.map((q, i) => <li key={i}>{q.q} <span className="text-xs">(Ans: {q.a})</span></li>)}</ul>}
       </Card>
     </div>
   );

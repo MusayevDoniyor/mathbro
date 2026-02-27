@@ -17,27 +17,19 @@ export default function RegisterPage() {
 
   async function onSubmit() {
     setError("");
-    const response = await fetch("/api/auth/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, password })
-    });
-
-    const data = await response.json();
-    if (!response.ok) return setError(data.error);
-
+    const res = await fetch("/api/auth/register", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name, email, password }) });
+    const data = await res.json();
+    if (!res.ok) return setError(data.error);
     localStorage.setItem(tokenKey, data.token);
     router.push("/");
   }
 
   return (
-    <Card className="mx-auto max-w-md space-y-3 fade-in-up soft-hover">
-      <h2 className="text-2xl font-bold">Create your MathBro account</h2>
-      <p className="text-sm text-muted">Start with one weak topic and build from there.</p>
+    <Card className="mx-auto max-w-md space-y-3">
+      <h2 className="text-2xl font-bold">Register</h2>
       <Input placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} />
       <Input placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
-      <Input placeholder="Password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-      <p className="text-xs text-muted">Use at least 8 characters with uppercase, lowercase, and a number.</p>
+      <Input placeholder="Password (min 8)" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
       {error && <p className="text-sm text-rose-300">{error}</p>}
       <Button onClick={onSubmit}>Create account</Button>
       <p className="text-sm text-muted">Already have one? <Link className="text-cyan-300" href="/login">Login</Link></p>
