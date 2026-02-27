@@ -1,0 +1,60 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String         @id @default(cuid())
+  name          String
+  email         String         @unique
+  password      String
+  savedProblems SavedProblem[]
+  weakAreas     WeakArea[]
+  createdAt     DateTime       @default(now())
+}
+
+model Topic {
+  id            String         @id @default(cuid())
+  name          String         @unique
+  category      String
+  formulas      Formula[]
+  savedProblems SavedProblem[]
+  weakAreas     WeakArea[]
+}
+
+model SavedProblem {
+  id        String   @id @default(cuid())
+  userId    String
+  question  String
+  solution  String
+  topicId   String?
+  confusing Boolean  @default(false)
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  topic     Topic?   @relation(fields: [topicId], references: [id])
+}
+
+model Formula {
+  id          String  @id @default(cuid())
+  title       String
+  expression  String
+  explanation String
+  topicId     String
+  bookmarked  Boolean @default(false)
+  topic       Topic   @relation(fields: [topicId], references: [id], onDelete: Cascade)
+}
+
+model WeakArea {
+  id      String @id @default(cuid())
+  userId  String
+  topicId String
+  score   Int
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  topic   Topic  @relation(fields: [topicId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, topicId])
+}
